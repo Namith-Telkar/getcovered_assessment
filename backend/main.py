@@ -5,6 +5,7 @@ from typing import Optional
 from scraper import AuthDetector
 from agent import AgenticAuthDetector
 import logging
+import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -12,9 +13,22 @@ load_dotenv()
 
 app = FastAPI(title="Auth Component Detector API")
 
+# Configure CORS - allow Vercel domains and localhost
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:5174",
+]
+
+# Add production origins from environment variable if set
+if os.getenv("FRONTEND_URL"):
+    allowed_origins.append(os.getenv("FRONTEND_URL"))
+
+# Allow all Vercel preview deployments
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
