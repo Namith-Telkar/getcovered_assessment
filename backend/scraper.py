@@ -1,14 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
-import ollama
+import google.generativeai as genai
 import json
 import re
 from urllib.parse import urljoin, urlparse
 import asyncio
 from playwright.async_api import async_playwright
+import os
 
 class AuthDetector:
     def __init__(self):
+        # Initialize Gemini
+        api_key = os.getenv('GEMINI_API_KEY')
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable not set")
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -25,27 +33,179 @@ class AuthDetector:
         })
         self.use_playwright = False
     
-    def detect_auth_components(self, url, max_depth=2, use_playwright=True):
+    async def detect(self, url, max_depth=2, use_playwright=True):
         """
-        Recursively detect auth components with AI guidance
+        Simplified: Only check the given page for auth components.
+        Returns HTML snippet if found, or status (not present/captcha blocking).
         
         Args:
             url: URL to analyze
-            max_depth: Maximum recursion depth for link following
+            max_depth: (Deprecated - not used in simplified version)
             use_playwright: If True (default), always use Playwright for maximum compatibility.
                           If False, only use Playwright for detected JS-heavy pages.
         """
+        print(f"\n🔍 Analyzing {url}")
+        
         if use_playwright:
             print(f"🎭 Using Playwright by default for maximum compatibility...")
-            # Return the coroutine directly, let the caller await it
-            return self._detect_with_playwright(url)
+            return await self._detect_with_playwright_simple(url)
         
         # Legacy mode: only use Playwright if detected as JS-heavy
         if self._is_js_heavy_page(url):
             print(f"🌐 Detected JS-heavy page dynamically, using Playwright...")
-            return self._detect_with_playwright(url)
+            return await self._detect_with_playwright_simple(url)
         
-        return self._detect_recursive(url, depth=0, max_depth=max_depth, visited=set())
+        return self._detect_simple(url)
+    
+    def _detect_simple(self, url):
+        """Simple detection for traditional HTML pages"""
+        try:
+            print(f"📄 Scraping page...")
+            html_content = self._scrape_page(url)
+            soup = BeautifulSoup(html_content, 'html.parser')
+            
+            # Traditional detection
+            print(f"🔎 Checking for auth components...")
+            components = self._traditional_detection(soup)
+            
+            if components:
+                print(f"✅ Found {len(components)} auth components")
+                return {
+                    "url": url,
+                    "found": True,
+                    "components": components,
+                    "ai_analysis": "Authentication components detected on this page."
+                }
+            else:
+                print(f"❌ No auth components found")
+                return {
+                    "url": url,
+                    "found": False,
+                    "components": [],
+                    "ai_analysis": "No authentication components found on this page."
+                }
+                
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            return {
+                "url": url,
+                "found": False,
+                "components": [],
+                "ai_analysis": f"Error accessing page: {str(e)}"
+            }
+    
+    async def _detect_with_playwright_simple(self, url):
+        """Simple Playwright detection for JS-heavy pages"""
+        try:
+            print(f"🎭 Starting Playwright for {url}")
+            playwright = await async_playwright().start()
+            
+            browser = await playwright.chromium.launch(
+                headless=True,
+                args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-dev-shm-usage',
+                    '--no-sandbox'
+                ]
+            )
+            
+            context = await browser.new_context(
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                viewport={'width': 1920, 'height': 1080},
+                locale='en-US',
+                timezone_id='America/New_York'
+            )
+            
+            page = await context.new_page()
+            
+            # Hide webdriver property
+            await page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+            """)
+            
+            print(f"📄 Navigating to {url}...")
+            
+            # Try with networkidle first, fallback to domcontentloaded
+            try:
+                await page.goto(url, wait_until='networkidle', timeout=15000)
+                await page.wait_for_timeout(3000)
+            except Exception as nav_err:
+                print(f"⚠️  Navigation timeout, trying with domcontentloaded: {nav_err}")
+                try:
+                    # Fallback: just wait for DOM to load
+                    await page.goto(url, wait_until='domcontentloaded', timeout=10000)
+                    await page.wait_for_timeout(2000)
+                except Exception as fallback_err:
+                    print(f"⚠️  Fallback also failed: {fallback_err}")
+                    # Continue anyway, we might have partial content
+            
+            html_content = await page.content()
+            print(f"✅ Got rendered HTML ({len(html_content)} chars)")
+            
+            await context.close()
+            await browser.close()
+            await playwright.stop()
+            
+            # Check for CAPTCHA/bot protection
+            captcha_detected = self._check_captcha(html_content)
+            
+            if captcha_detected:
+                print(f"🤖 CAPTCHA/bot protection detected")
+                return {
+                    "url": url,
+                    "found": False,
+                    "components": [],
+                    "ai_analysis": "Page is blocked by CAPTCHA or bot protection. Manual access required."
+                }
+            
+            # Check for auth components
+            soup = BeautifulSoup(html_content, 'html.parser')
+            components = self._traditional_detection(soup)
+            
+            if components:
+                print(f"✅ Found {len(components)} auth components")
+                return {
+                    "url": url,
+                    "found": True,
+                    "components": components,
+                    "ai_analysis": "Authentication components detected on this page (JavaScript-rendered)."
+                }
+            else:
+                print(f"❌ No auth components found")
+                return {
+                    "url": url,
+                    "found": False,
+                    "components": [],
+                    "ai_analysis": "No authentication components found on this page."
+                }
+                
+        except Exception as e:
+            print(f"❌ Playwright error: {e}")
+            return {
+                "url": url,
+                "found": False,
+                "components": [],
+                "ai_analysis": f"Error rendering page: {str(e)}"
+            }
+    
+    def _check_captcha(self, html_content):
+        """Check if page is blocked by CAPTCHA"""
+        html_lower = html_content.lower()
+        
+        blocking_indicators = [
+            'please verify you are a human',
+            'solve this puzzle',
+            'press and hold',
+            'datadome',
+            'perimeterx',
+            'cf-challenge',
+            'robot or human',
+            'are you a robot'
+        ]
+        
+        return any(indicator in html_lower for indicator in blocking_indicators)
     
     def _detect_recursive(self, url, depth, max_depth, visited):
         print(f"\n🔍 DEPTH {depth}: Analyzing {url}")
@@ -632,9 +792,7 @@ class AuthDetector:
                 print(f"🔧 Trying fallback URLs: {fallback_urls}")
                 return fallback_urls[:3]
             
-            response = ollama.chat(model='llama3.2:latest', messages=[{
-                'role': 'user',
-                'content': f'''Find authentication/login URLs from these page elements:
+            prompt = f'''Find authentication/login URLs from these page elements:
 
 {chr(10).join(all_elements[:15])}
 
@@ -647,9 +805,9 @@ Look for ANY of these patterns:
 IMPORTANT: Even if text doesn't explicitly say "login", include URLs that could lead to authentication.
 
 Return ONLY JSON array: ["url1", "url2"]'''
-            }])
             
-            ai_response = response['message']['content'].strip()
+            response = self.model.generate_content(prompt)
+            ai_response = response.text.strip()
             print(f"🤖 AI Full Analysis Response: {ai_response}")
             
             # Extract URLs from AI response
@@ -685,9 +843,7 @@ Return ONLY JSON array: ["url1", "url2"]'''
     def _ai_analyze_found(self, html_content, soup):
         """AI analysis when auth components are found"""
         try:
-            response = ollama.chat(model='llama3.2:latest', messages=[{
-                'role': 'user',
-                'content': f'''Authentication components found! Analyze what type of login system this is:
+            prompt = f'''Authentication components found! Analyze what type of login system this is:
 
 HTML sample: {html_content[:1500]}
 
@@ -695,8 +851,9 @@ Briefly describe:
 1. Type of authentication (form-based, modal, etc.)
 2. What fields are present
 3. Any special features'''
-            }])
-            return response['message']['content']
+            
+            response = self.model.generate_content(prompt)
+            return response.text
         except:
             return "Auth components detected via traditional parsing"
     
@@ -706,9 +863,7 @@ Briefly describe:
             page_title = soup.find('title')
             title_text = page_title.get_text() if page_title else "No title"
             
-            response = ollama.chat(model='llama3.2:latest', messages=[{
-                'role': 'user',
-                'content': f'''No authentication components found on page: "{title_text}"
+            prompt = f'''No authentication components found on page: "{title_text}"
 
 Suggested links checked: {suggested_links}
 
@@ -716,7 +871,8 @@ Briefly explain:
 1. Why this page might not have login forms
 2. What type of page this appears to be
 3. Whether login might be handled differently (JS, modals, etc.)'''
-            }])
-            return response['message']['content']
+            
+            response = self.model.generate_content(prompt)
+            return response.text
         except:
             return f"No auth components found. Checked {len(suggested_links)} suggested links."

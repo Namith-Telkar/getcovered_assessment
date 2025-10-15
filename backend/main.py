@@ -5,6 +5,10 @@ from typing import Optional
 from scraper import AuthDetector
 from agent import AgenticAuthDetector
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = FastAPI(title="Auth Component Detector API")
 
@@ -20,7 +24,7 @@ detector = AuthDetector()
 
 class URLRequest(BaseModel):
     url: str
-    use_agents: bool = False
+    use_agents: bool = True
 
 class AuthResponse(BaseModel):
     url: str
@@ -39,12 +43,19 @@ async def root():
 async def analyze_url(request: URLRequest):
     try:
         # Use Playwright for all requests by default (maximum compatibility)
-        static_result = detector.detect_auth_components(request.url, use_playwright=True)
+        static_result = await detector.detect(request.url, use_playwright=True)
         
-        # Check if result is a coroutine (Playwright mode)
-        import inspect
-        if inspect.iscoroutine(static_result):
-            static_result = await static_result
+        # Check for CAPTCHA - if detected, return immediately without agents
+        if "captcha" in static_result.get('ai_analysis', '').lower() or "bot protection" in static_result.get('ai_analysis', '').lower():
+            return {
+                "url": static_result['url'],
+                "found": False,
+                "components": [],
+                "ai_analysis": static_result['ai_analysis'],
+                "method": "captcha_blocked",
+                "captcha_detected": True,
+                "error": None
+            }
         
         # Log HTML snippet length for debugging
         if static_result.get('components'):

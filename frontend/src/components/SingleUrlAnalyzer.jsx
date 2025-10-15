@@ -6,11 +6,14 @@ function SingleUrlAnalyzer({ onAnalysisComplete, onError, setIsLoading }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const examples = [
+    {
+      name: "Getcovered",
+      url: "https://www.getcoveredinsurance.com/auth/login",
+    },
     { name: "GitHub", url: "https://github.com/login" },
     { name: "Instagram", url: "https://instagram.com/accounts/login" },
     { name: "Stack Overflow", url: "https://stackoverflow.com/users/login" },
-    { name: "Medium", url: "https://medium.com/m/signin" },
-    { name: "WordPress", url: "https://wordpress.com/log-in" },
+    { name: "CNN", url: "https://www.cnn.com/account/log-in" },
   ];
 
   const handleSubmit = async (e) => {
@@ -23,6 +26,7 @@ function SingleUrlAnalyzer({ onAnalysisComplete, onError, setIsLoading }) {
 
     setIsAnalyzing(true);
     setIsLoading(true);
+    onAnalysisComplete([]); // Clear previous results
 
     try {
       const result = await analyzeUrl(url.trim());

@@ -1,11 +1,11 @@
 # AI-Powered Authentication Component Detector
 
-A web application that uses AI (Llama 3.2) to detect authentication components on websites.
+A web application that uses AI (Google Gemini) to detect authentication components on websites.
 
 ## Features
 
 - Web scraping with intelligent authentication detection
-- AI-powered HTML analysis using local Llama model
+- AI-powered HTML analysis using Google Gemini
 - React frontend with real-time results
 - Handles multi-step login flows
 - **Dynamic JavaScript detection** - automatically detects if a page needs JS rendering
@@ -16,16 +16,14 @@ A web application that uses AI (Llama 3.2) to detect authentication components o
 
 ### Prerequisites
 
-```bash
-# Install Ollama (macOS)
-brew install ollama
-brew services start ollama
-ollama pull llama3.2
+**Get a Gemini API Key:**
 
-# For Linux:
-# curl -fsSL https://ollama.ai/install.sh | sh
-# ollama pull llama3.2
-```
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Create a `.env` file in the `backend/` directory:
+   ```bash
+   GEMINI_API_KEY=your_api_key_here
+   ```
 
 ### Backend
 
