@@ -1,6 +1,7 @@
 # Quick Deployment Checklist
 
 ## Before You Start
+
 - [ ] GitHub repository pushed: https://github.com/Namith-Telkar/getcovered_assessment
 - [ ] Gemini API key ready: https://makersuite.google.com/app/apikey
 - [ ] DigitalOcean account created
@@ -9,15 +10,17 @@
 ## Part 1: Backend on DigitalOcean (20-30 mins)
 
 ### 1. Create Droplet
+
 - [ ] Login to https://cloud.digitalocean.com/
 - [ ] Create → Droplets
 - [ ] Ubuntu 22.04 LTS, Basic plan, 1GB RAM ($6/month)
 - [ ] Choose datacenter region
 - [ ] Set up SSH key or password
 - [ ] Create droplet
-- [ ] **Save your droplet IP: ________________**
+- [ ] **Save your droplet IP: ******\_\_\_\_********
 
 ### 2. Connect & Install Docker
+
 ```bash
 ssh root@YOUR_DROPLET_IP
 apt update && apt upgrade -y
@@ -27,6 +30,7 @@ apt install docker-compose git -y
 ```
 
 ### 3. Deploy Backend
+
 ```bash
 cd /opt
 git clone https://github.com/Namith-Telkar/getcovered_assessment.git
@@ -48,17 +52,19 @@ ufw enable
 ```
 
 ### 4. Test Backend
+
 ```bash
 curl http://YOUR_DROPLET_IP:8000
 # Should return: {"message":"Auth Component Detector API..."}
 ```
 
 - [ ] Backend is running
-- [ ] **Backend URL: http://________________:8000**
+- [ ] **Backend URL: http://******\_\_\_\_******:8000**
 
 ## Part 2: Frontend on Vercel (5-10 mins)
 
 ### 1. Update Local Code
+
 ```bash
 # On your local machine
 cd /Users/namithtelkar/Desktop/auth-detector-webapp/frontend
@@ -74,6 +80,7 @@ git push origin main
 ```
 
 ### 2. Deploy to Vercel
+
 - [ ] Go to https://vercel.com
 - [ ] Sign in with GitHub
 - [ ] Click "Add New... → Project"
@@ -90,6 +97,7 @@ git push origin main
 - [ ] **Save Vercel URL: https://________________.vercel.app**
 
 ### 3. Update Backend CORS (Optional but Recommended)
+
 ```bash
 ssh root@YOUR_DROPLET_IP
 cd /opt/getcovered_assessment/backend
@@ -114,9 +122,9 @@ docker restart auth-detector
 📝 **Save these for your records:**
 
 - **Frontend**: https://________________.vercel.app
-- **Backend**: http://________________:8000
+- **Backend**: http://******\_\_\_\_******:8000
 - **GitHub**: https://github.com/Namith-Telkar/getcovered_assessment
-- **DigitalOcean Droplet IP**: ________________
+- **DigitalOcean Droplet IP**: ******\_\_\_\_******
 
 ## Cost
 
@@ -127,6 +135,7 @@ docker restart auth-detector
 ## Troubleshooting
 
 ### Backend not responding
+
 ```bash
 ssh root@YOUR_DROPLET_IP
 docker logs auth-detector
@@ -134,16 +143,19 @@ docker restart auth-detector
 ```
 
 ### Frontend can't connect
+
 - Check VITE_API_URL in Vercel environment variables
 - Verify backend is running: `curl http://YOUR_DROPLET_IP:8000`
 - Check CORS settings in backend
 
 ### See full guide
+
 Read `DEPLOYMENT.md` for detailed instructions and troubleshooting
 
 ## Updating Your App
 
 ### Update Backend
+
 ```bash
 ssh root@YOUR_DROPLET_IP
 cd /opt/getcovered_assessment
@@ -155,6 +167,7 @@ docker run -d --name auth-detector --restart unless-stopped -p 8000:8000 --env-f
 ```
 
 ### Update Frontend
+
 ```bash
 # Just push to GitHub - Vercel auto-deploys
 git add .

@@ -1,6 +1,7 @@
 # Deployment Guide
 
 ## Prerequisites
+
 - GitHub account with your repository pushed
 - Vercel account (free)
 - DigitalOcean account (with payment method)
@@ -79,6 +80,7 @@ nano .env
 ```
 
 Add this content (replace with your actual API key):
+
 ```
 GEMINI_API_KEY=your_actual_gemini_api_key_here
 ```
@@ -125,6 +127,7 @@ curl http://localhost:8000
 ```
 
 Test from your computer:
+
 ```bash
 curl http://YOUR_DROPLET_IP:8000
 ```
@@ -145,6 +148,7 @@ nano /etc/nginx/sites-available/auth-detector
 ```
 
 Add this configuration:
+
 ```nginx
 server {
     listen 80;
@@ -192,6 +196,7 @@ nano .env
 ```
 
 Add (replace with your droplet IP or domain):
+
 ```
 VITE_API_URL=http://YOUR_DROPLET_IP:8000
 # OR if you set up domain with SSL:
@@ -201,6 +206,7 @@ VITE_API_URL=http://YOUR_DROPLET_IP:8000
 ### Step 2: Update CORS in Backend
 
 SSH back into your droplet:
+
 ```bash
 ssh root@YOUR_DROPLET_IP
 cd /opt/getcovered_assessment/backend
@@ -208,6 +214,7 @@ nano main.py
 ```
 
 Update the CORS origins to include your Vercel domain (you'll add this after deployment):
+
 ```python
 app.add_middleware(
     CORSMiddleware,
@@ -224,6 +231,7 @@ app.add_middleware(
 ```
 
 Rebuild and restart:
+
 ```bash
 docker stop auth-detector
 docker rm auth-detector
@@ -265,6 +273,7 @@ git push origin main
 ### Step 5: Get Your Vercel URL
 
 After deployment completes:
+
 1. Copy your Vercel URL (e.g., `https://your-app.vercel.app`)
 2. Update backend CORS (see Step 2 above) with this URL
 3. Redeploy backend
@@ -325,20 +334,24 @@ free -h
 ### Backend Issues
 
 **Container won't start:**
+
 ```bash
 docker logs auth-detector
 ```
 
 **Out of memory:**
+
 - Upgrade to 2GB droplet ($12/month)
 
 **Port 8000 not accessible:**
+
 ```bash
 ufw status
 ufw allow 8000
 ```
 
 **Playwright errors:**
+
 ```bash
 docker exec -it auth-detector bash
 playwright install chromium
@@ -347,11 +360,13 @@ playwright install chromium
 ### Frontend Issues
 
 **Can't connect to backend:**
+
 - Check VITE_API_URL environment variable in Vercel
 - Check CORS settings in backend
 - Try with droplet IP instead of domain
 
 **Build fails:**
+
 - Check build logs in Vercel dashboard
 - Verify package.json has correct scripts
 - Check for TypeScript errors
@@ -386,6 +401,7 @@ playwright install chromium
 ## Your URLs
 
 After deployment, save these:
+
 - **Backend**: `http://YOUR_DROPLET_IP:8000` or `https://api.yourdomain.com`
 - **Frontend**: `https://your-app.vercel.app`
 - **GitHub Repo**: `https://github.com/Namith-Telkar/getcovered_assessment`
