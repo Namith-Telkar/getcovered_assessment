@@ -67,7 +67,7 @@ function App() {
         {/* Footer */}
         <footer className="mt-24 text-center py-6 border-t border-[#e0e0e0]">
           <p className="text-[#5a5a5a] text-sm font-light">
-            Powered by Llama 3.2 (Ollama)
+            Powered by Google Gemini
           </p>
         </footer>
       </div>
