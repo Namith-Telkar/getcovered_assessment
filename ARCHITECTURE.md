@@ -1,6 +1,7 @@
 # System Architecture & Design
 
 ## Table of Contents
+
 1. [System Overview](#system-overview)
 2. [Architecture Diagram](#architecture-diagram)
 3. [Component Architecture](#component-architecture)
@@ -15,6 +16,7 @@
 The Authentication Component Detector is a full-stack web application that uses AI to analyze websites and detect authentication components. It combines web scraping, browser automation, and Google Gemini AI to provide intelligent analysis of login forms and authentication mechanisms.
 
 ### Key Features
+
 - 🌐 Web scraping with dynamic JavaScript rendering (Playwright)
 - 🤖 AI-powered analysis using Google Gemini
 - 📊 Real-time results with formatted markdown output
@@ -393,6 +395,7 @@ backend/
 ### Deployment Details
 
 #### Frontend - Vercel
+
 - **URL**: `https://getcovered-assessment-one.vercel.app/`
 - **Region**: Global (CDN Edge Locations)
 - **Build**: Automatic on git push to main branch
@@ -406,6 +409,7 @@ backend/
   - Custom domains support
 
 #### Backend - DigitalOcean Droplet
+
 - **Provider**: DigitalOcean
 - **Location**: Choose nearest datacenter (e.g., NYC, SFO, AMS)
 - **Instance**: Basic Droplet
@@ -431,21 +435,23 @@ backend/
 ### External Services
 
 #### Google AI Platform
+
 - **Service**: Gemini API
 - **Model**: gemini-pro
 - **Endpoint**: `https://generativelanguage.googleapis.com`
 - **Authentication**: API Key (Bearer token)
-- **Rate Limits**: 
+- **Rate Limits**:
   - Free tier: 60 requests/minute
   - Consider paid tier for production
-- **Cost**: 
+- **Cost**:
   - Free tier available
   - Pay-as-you-go pricing for scale
 
 #### GitHub
+
 - **Repository**: `Namith-Telkar/getcovered_assessment`
 - **Branch**: main
-- **Integration**: 
+- **Integration**:
   - Vercel auto-deploy
   - Git push triggers rebuild
 - **Webhooks**: Vercel deployment triggers
@@ -455,6 +461,7 @@ backend/
 ## Technology Stack
 
 ### Frontend Stack
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Framework & Build                          │
@@ -480,6 +487,7 @@ backend/
 ```
 
 ### Backend Stack
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Framework & Server                         │
@@ -513,6 +521,7 @@ backend/
 ```
 
 ### Infrastructure
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Hosting                                    │
@@ -542,6 +551,7 @@ backend/
 ## Security Considerations
 
 ### Frontend Security
+
 - ✅ HTTPS enforced by Vercel
 - ✅ CSP headers configured
 - ✅ XSS protection via React
@@ -550,6 +560,7 @@ backend/
 - ✅ Environment variables for config
 
 ### Backend Security
+
 - ✅ API key stored in environment variables
 - ✅ CORS middleware configured
 - ✅ Rate limiting recommended
@@ -561,6 +572,7 @@ backend/
 - ✅ Non-root user in container
 
 ### API Security
+
 - ✅ Gemini API key rotation supported
 - ✅ HTTPS for all API calls
 - ✅ Request timeout limits
@@ -572,18 +584,21 @@ backend/
 ## Performance Characteristics
 
 ### Response Times
+
 - **Static HTML sites**: 2-5 seconds
 - **JS-heavy sites (Playwright)**: 10-30 seconds
 - **CAPTCHA detection**: 15-30 seconds (early exit)
 - **AI analysis**: +2-5 seconds (Gemini API)
 
 ### Resource Usage
+
 - **Memory**: 500MB-1GB (with Chromium)
 - **CPU**: 50-100% during Playwright rendering
 - **Network**: 1-10MB per analysis
 - **Storage**: ~2GB (Docker + Chromium)
 
 ### Scalability Considerations
+
 - **Concurrent Requests**: Limited by single droplet
 - **Recommended**: Add load balancer for >10 req/s
 - **Bottleneck**: Playwright (browser instances)
@@ -594,6 +609,7 @@ backend/
 ## Monitoring & Logging
 
 ### Current Logging
+
 ```python
 # Backend console logs
 print(f"🔍 Analyzing {url}")
@@ -602,6 +618,7 @@ print(f"❌ Error: {error}")
 ```
 
 ### Recommended for Production
+
 - **Application Logs**: CloudWatch, Datadog, or Sentry
 - **Access Logs**: Nginx logs
 - **Error Tracking**: Sentry for exceptions
@@ -614,6 +631,7 @@ print(f"❌ Error: {error}")
 ## Future Enhancements
 
 ### Architecture Improvements
+
 1. **Caching Layer**: Redis for repeated URLs
 2. **Queue System**: Celery for async processing
 3. **Database**: PostgreSQL for history
@@ -622,6 +640,7 @@ print(f"❌ Error: {error}")
 6. **API Gateway**: Kong or AWS API Gateway
 
 ### Feature Additions
+
 1. **Authentication**: User accounts
 2. **History**: Save past analyses
 3. **Batch Processing**: Multiple URLs
@@ -631,32 +650,10 @@ print(f"❌ Error: {error}")
 
 ---
 
-## Cost Breakdown
-
-### Monthly Costs
-- **Vercel**: $0 (Hobby tier)
-- **DigitalOcean**: $6 (1GB droplet)
-- **Google Gemini**: $0-$5 (free tier usually sufficient)
-- **Domain** (optional): $12/year (~$1/month)
-- **SSL**: $0 (Let's Encrypt free)
-
-**Total: ~$6-12/month**
-
-### Cost Optimization
-- Use free Gemini tier (60 req/min)
-- Implement caching to reduce API calls
-- Use smaller droplet if traffic is low
-- Consider serverless for sporadic usage
-
----
-
 ## References
 
-- **Frontend Repo**: https://github.com/Namith-Telkar/getcovered_assessment/tree/main/frontend
-- **Backend Repo**: https://github.com/Namith-Telkar/getcovered_assessment/tree/main/backend
 - **Live Demo**: https://getcovered-assessment-one.vercel.app/
-- **API Docs**: http://YOUR_DROPLET_IP:8000/docs (FastAPI auto-docs)
 
 ---
 
-*Last Updated: October 15, 2025*
+_Last Updated: October 15, 2025_

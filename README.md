@@ -1,53 +1,103 @@
-# AI-Powered Authentication Component Detector
+# 🔐 Authentication Component Detector
 
-A web application that uses AI (Google Gemini) to detect authentication components on websites.
+Detect authentication components on any website using AI-powered analysis.
 
-## Features
+## What It Does
 
-- Web scraping with intelligent authentication detection
-- AI-powered HTML analysis using Google Gemini
-- React frontend with real-time results
-- Handles multi-step login flows
-- **Dynamic JavaScript detection** - automatically detects if a page needs JS rendering
-- **JavaScript rendering** for modern SPAs (Instagram, Twitter, WordPress, etc.)
-- **9 detection methods** for maximum accuracy
+Enter any website URL and get:
 
-## Setup
+- ✅ Authentication components detected (login forms, password fields, etc.)
+- 🤖 AI-powered analysis with confidence scoring
+- 📊 Detailed breakdown of each component
+- � CAPTCHA detection alerts
+
+## Tech Stack
+
+- **Frontend**: React + Vite + Tailwind CSS
+- **Backend**: FastAPI + Playwright + Google Gemini AI
+- **Deployment**: Vercel (frontend) + DigitalOcean (backend)
+
+## Quick Start
 
 ### Prerequisites
 
-**Get a Gemini API Key:**
+- Python 3.11+
+- Node.js 18+
+- [Google Gemini API key](https://makersuite.google.com/app/apikey) (free)
 
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Create a new API key
-3. Create a `.env` file in the `backend/` directory:
-   ```bash
-   GEMINI_API_KEY=your_api_key_here
-   ```
-
-### Backend
+### Installation
 
 ```bash
+# Clone repository
+git clone https://github.com/Namith-Telkar/getcovered_assessment.git
+cd getcovered_assessment
+
+# Backend setup
 cd backend
 pip install -r requirements.txt
-
-# Install Playwright browsers (required for JavaScript-heavy sites like Instagram)
 playwright install chromium
-python -m playwright install chromium
 
+# Create .env file and add your GEMINI_API_KEY
+cp .env.example .env
+
+# Start backend (http://localhost:8000)
 uvicorn main:app --reload
-```
 
-### Frontend
-
-```bash
+# Frontend setup (in new terminal)
 cd frontend
 npm install
+
+# Start frontend (http://localhost:5173)
 npm run dev
 ```
 
 ## Usage
 
-1. Enter a website URL
-2. Click "Analyze"
-3. View detected authentication components
+1. Open `http://localhost:5173`
+2. Enter a URL (e.g., `https://github.com/login`)
+3. Click "Analyze"
+4. View detected components and AI analysis
+
+## Deployment
+
+Deploy to production in ~30 minutes:
+
+**Frontend** → Vercel
+
+- Connect GitHub repo
+- Auto-deploy on push
+
+**Backend** → DigitalOcean
+
+- Docker container
+- SSL with Let's Encrypt
+
+## Project Structure
+
+```
+auth-detector-webapp/
+├── backend/
+│   ├── main.py              # FastAPI app
+│   ├── scraper.py           # Detection engine
+│   ├── agent.py             # AI analysis
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   └── components/
+│   └── package.json
+└── README.md
+```
+
+## Author
+
+**Namith Telkar**
+
+- GitHub: [@Namith-Telkar](https://github.com/Namith-Telkar)
+- Repository: [getcovered_assessment](https://github.com/Namith-Telkar/getcovered_assessment)
+
+## License
+
+MIT License - See LICENSE file for details
+
+---

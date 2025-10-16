@@ -172,35 +172,97 @@ function ResultCard({ result }) {
               remarkPlugins={[remarkGfm]}
               components={{
                 // Custom styling for markdown elements
-                h1: ({node, ...props}) => <h1 className="text-xl font-bold mt-4 mb-2" {...props} />,
-                h2: ({node, ...props}) => <h2 className="text-lg font-bold mt-3 mb-2" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-base font-bold mt-3 mb-1" {...props} />,
-                h4: ({node, ...props}) => <h4 className="text-base font-semibold mt-2 mb-1" {...props} />,
-                h5: ({node, ...props}) => <h5 className="text-sm font-semibold mt-2 mb-1" {...props} />,
-                h6: ({node, ...props}) => <h6 className="text-sm font-semibold mt-1 mb-1" {...props} />,
-                p: ({node, ...props}) => <p className="mb-2" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2 space-y-1" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2 space-y-1" {...props} />,
-                li: ({node, ...props}) => <li className="ml-0" {...props} />,
-                code: ({node, inline, ...props}) => 
-                  inline 
-                    ? <code className="bg-gray-200 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
-                    : <code className="block bg-gray-200 p-2 rounded text-sm font-mono overflow-x-auto" {...props} />,
-                pre: ({node, ...props}) => <pre className="bg-gray-200 p-3 rounded my-2 overflow-x-auto" {...props} />,
-                table: ({node, ...props}) => (
+                h1: ({ node, ...props }) => (
+                  <h1 className="text-xl font-bold mt-4 mb-2" {...props} />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-lg font-bold mt-3 mb-2" {...props} />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-base font-bold mt-3 mb-1" {...props} />
+                ),
+                h4: ({ node, ...props }) => (
+                  <h4
+                    className="text-base font-semibold mt-2 mb-1"
+                    {...props}
+                  />
+                ),
+                h5: ({ node, ...props }) => (
+                  <h5 className="text-sm font-semibold mt-2 mb-1" {...props} />
+                ),
+                h6: ({ node, ...props }) => (
+                  <h6 className="text-sm font-semibold mt-1 mb-1" {...props} />
+                ),
+                p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+                ul: ({ node, ...props }) => (
+                  <ul className="list-disc ml-6 my-2 space-y-1" {...props} />
+                ),
+                ol: ({ node, ...props }) => (
+                  <ol className="list-decimal ml-6 my-2 space-y-1" {...props} />
+                ),
+                li: ({ node, ...props }) => <li className="ml-0" {...props} />,
+                code: ({ node, inline, ...props }) =>
+                  inline ? (
+                    <code
+                      className="bg-gray-200 px-1.5 py-0.5 rounded text-sm font-mono"
+                      {...props}
+                    />
+                  ) : (
+                    <code
+                      className="block bg-gray-200 p-2 rounded text-sm font-mono overflow-x-auto"
+                      {...props}
+                    />
+                  ),
+                pre: ({ node, ...props }) => (
+                  <pre
+                    className="bg-gray-200 p-3 rounded my-2 overflow-x-auto"
+                    {...props}
+                  />
+                ),
+                table: ({ node, ...props }) => (
                   <div className="overflow-x-auto my-3">
-                    <table className="min-w-full border-collapse border border-gray-300 text-sm" {...props} />
+                    <table
+                      className="min-w-full border-collapse border border-gray-300 text-sm"
+                      {...props}
+                    />
                   </div>
                 ),
-                thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
-                th: ({node, ...props}) => <th className="border border-gray-300 px-3 py-2 text-left font-semibold" {...props} />,
-                td: ({node, ...props}) => <td className="border border-gray-300 px-3 py-2" {...props} />,
-                tr: ({node, ...props}) => <tr className="hover:bg-gray-50" {...props} />,
-                hr: ({node, ...props}) => <hr className="my-4 border-t border-gray-300" {...props} />,
-                blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-2" {...props} />,
-                a: ({node, ...props}) => <a className="text-[#5b7fd4] hover:text-[#4a6ec3] underline" {...props} />,
-                strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
-                em: ({node, ...props}) => <em className="italic" {...props} />,
+                thead: ({ node, ...props }) => (
+                  <thead className="bg-gray-100" {...props} />
+                ),
+                th: ({ node, ...props }) => (
+                  <th
+                    className="border border-gray-300 px-3 py-2 text-left font-semibold"
+                    {...props}
+                  />
+                ),
+                td: ({ node, ...props }) => (
+                  <td className="border border-gray-300 px-3 py-2" {...props} />
+                ),
+                tr: ({ node, ...props }) => (
+                  <tr className="hover:bg-gray-50" {...props} />
+                ),
+                hr: ({ node, ...props }) => (
+                  <hr className="my-4 border-t border-gray-300" {...props} />
+                ),
+                blockquote: ({ node, ...props }) => (
+                  <blockquote
+                    className="border-l-4 border-gray-300 pl-4 italic my-2"
+                    {...props}
+                  />
+                ),
+                a: ({ node, ...props }) => (
+                  <a
+                    className="text-[#5b7fd4] hover:text-[#4a6ec3] underline"
+                    {...props}
+                  />
+                ),
+                strong: ({ node, ...props }) => (
+                  <strong className="font-semibold" {...props} />
+                ),
+                em: ({ node, ...props }) => (
+                  <em className="italic" {...props} />
+                ),
               }}
             >
               {result.description}
