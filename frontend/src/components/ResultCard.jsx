@@ -1,4 +1,6 @@
 import { html as beautifyHtml } from "js-beautify";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function ResultCard({ result }) {
   const statusClass = result.found ? "border-[#10b981]" : "border-[#e89090]";
@@ -24,47 +26,6 @@ function ResultCard({ result }) {
       console.error("Failed to copy:", err);
       alert("Failed to copy to clipboard");
     }
-  };
-
-  // Function to format description with proper rendering
-  const formatDescription = (text) => {
-    if (!text) return null;
-
-    // Split by lines and render
-    const lines = text.split("\n");
-    return lines.map((line, index) => {
-      // Bold text between ** **
-      const boldFormatted = line.replace(
-        /\*\*(.*?)\*\*/g,
-        "<strong>$1</strong>"
-      );
-
-      // Check if it's a bullet point
-      if (line.trim().startsWith("- ")) {
-        return (
-          <li
-            key={index}
-            className="ml-4"
-            dangerouslySetInnerHTML={{
-              __html: boldFormatted.replace(/^- /, ""),
-            }}
-          />
-        );
-      }
-      // Check if it's empty line (for spacing)
-      else if (line.trim() === "") {
-        return <div key={index} className="h-2" />;
-      }
-      // Regular text
-      else {
-        return (
-          <div
-            key={index}
-            dangerouslySetInnerHTML={{ __html: boldFormatted }}
-          />
-        );
-      }
-    });
   };
 
   // Function to format HTML with proper indentation
@@ -206,8 +167,44 @@ function ResultCard({ result }) {
       {/* Description */}
       {result.description && result.found && (
         <div className="mb-6 p-4 bg-[#fafafa] rounded-xl border border-[#e0e0e0]">
-          <div className="text-[#2d2d2d] text-base font-light leading-relaxed space-y-1">
-            {formatDescription(result.description)}
+          <div className="text-[#2d2d2d] text-base font-light leading-relaxed prose prose-sm max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                // Custom styling for markdown elements
+                h1: ({node, ...props}) => <h1 className="text-xl font-bold mt-4 mb-2" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-lg font-bold mt-3 mb-2" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-base font-bold mt-3 mb-1" {...props} />,
+                h4: ({node, ...props}) => <h4 className="text-base font-semibold mt-2 mb-1" {...props} />,
+                h5: ({node, ...props}) => <h5 className="text-sm font-semibold mt-2 mb-1" {...props} />,
+                h6: ({node, ...props}) => <h6 className="text-sm font-semibold mt-1 mb-1" {...props} />,
+                p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2 space-y-1" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2 space-y-1" {...props} />,
+                li: ({node, ...props}) => <li className="ml-0" {...props} />,
+                code: ({node, inline, ...props}) => 
+                  inline 
+                    ? <code className="bg-gray-200 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                    : <code className="block bg-gray-200 p-2 rounded text-sm font-mono overflow-x-auto" {...props} />,
+                pre: ({node, ...props}) => <pre className="bg-gray-200 p-3 rounded my-2 overflow-x-auto" {...props} />,
+                table: ({node, ...props}) => (
+                  <div className="overflow-x-auto my-3">
+                    <table className="min-w-full border-collapse border border-gray-300 text-sm" {...props} />
+                  </div>
+                ),
+                thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
+                th: ({node, ...props}) => <th className="border border-gray-300 px-3 py-2 text-left font-semibold" {...props} />,
+                td: ({node, ...props}) => <td className="border border-gray-300 px-3 py-2" {...props} />,
+                tr: ({node, ...props}) => <tr className="hover:bg-gray-50" {...props} />,
+                hr: ({node, ...props}) => <hr className="my-4 border-t border-gray-300" {...props} />,
+                blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-2" {...props} />,
+                a: ({node, ...props}) => <a className="text-[#5b7fd4] hover:text-[#4a6ec3] underline" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+                em: ({node, ...props}) => <em className="italic" {...props} />,
+              }}
+            >
+              {result.description}
+            </ReactMarkdown>
           </div>
         </div>
       )}
