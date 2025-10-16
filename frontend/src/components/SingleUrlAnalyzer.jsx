@@ -11,7 +11,7 @@ function SingleUrlAnalyzer({ onAnalysisComplete, onError, setIsLoading }) {
       url: "https://www.getcoveredinsurance.com/auth/login",
     },
     { name: "GitHub", url: "https://github.com/login" },
-    { name: "Instagram", url: "https://instagram.com/accounts/login" },
+    { name: "Facebook", url: "https://www.facebook.com/login" },
     { name: "Stack Overflow", url: "https://stackoverflow.com/users/login" },
     { name: "CNN", url: "https://www.cnn.com/account/log-in" },
   ];
