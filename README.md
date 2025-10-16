@@ -1,4 +1,12 @@
-# 🔐 Authentication Component Detector
+# 🔐## What It Does
+
+Enter any website URL and get:
+
+- ✅ Authentication components detected (login forms, password fields, etc.)
+- 🤖 AI-powered analysis with confidence scoring
+- 📊 Detailed breakdown of each component
+- 🚫 CAPTCHA detection alerts
+- ⚡ Redis caching for 100-600x faster repeat requestsication Component Detector
 
 Detect authentication components on any website using AI-powered analysis.
 
@@ -14,7 +22,7 @@ Enter any website URL and get:
 ## Tech Stack
 
 - **Frontend**: React + Vite + Tailwind CSS
-- **Backend**: FastAPI + Playwright + Google Gemini AI
+- **Backend**: FastAPI + Playwright + Google Gemini AI + Redis
 - **Deployment**: Vercel (frontend) + DigitalOcean (backend)
 
 ## Quick Start
@@ -39,6 +47,9 @@ playwright install chromium
 
 # Create .env file and add your GEMINI_API_KEY
 cp .env.example .env
+
+# Optional: Start Redis for caching (100-600x faster repeat requests)
+docker run -d --name redis -p 6379:6379 redis:7-alpine
 
 # Start backend (http://localhost:8000)
 uvicorn main:app --reload
@@ -71,6 +82,9 @@ Deploy to production in ~30 minutes:
 
 - Docker container
 - SSL with Let's Encrypt
+- Redis caching (optional but recommended)
+
+📖 **Full guides**: [DEPLOYMENT.md](./DEPLOYMENT.md) | [HTTPS-SETUP.md](./HTTPS-SETUP.md) | [REDIS-SETUP.md](./REDIS-SETUP.md)
 
 ## Project Structure
 
