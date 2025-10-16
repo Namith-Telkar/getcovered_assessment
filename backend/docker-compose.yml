@@ -35,8 +35,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
     networks:
       - auth-detector-network
     volumes:
